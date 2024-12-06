@@ -2,7 +2,6 @@ use axum::extract::Query;
 use axum::routing::get;
 use axum::Router;
 use serde::Deserialize;
-use tower_http::trace::TraceLayer;
 
 use crate::utils::error_handling::Result;
 use crate::utils::network_address::{IPv4Addr, IPv6Addr};
@@ -57,7 +56,6 @@ async fn egregious_decryption_v6(
 
 pub fn routes() -> Router {
     Router::new()
-        .layer(TraceLayer::new_for_http())
         .route("/dest", get(egregious_encryption))
         .route("/key", get(egregious_decryption))
         .route("/v6/dest", get(egregious_encryption_v6))

@@ -6,7 +6,7 @@ use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, Tr
 use tower_http::LatencyUnit;
 use tracing::Level;
 
-use modules::{day_negative_one, day_two};
+use modules::{day_five, day_negative_one, day_two};
 
 #[shuttle_runtime::main]
 async fn main() -> shuttle_axum::ShuttleAxum {
@@ -28,6 +28,7 @@ async fn main() -> shuttle_axum::ShuttleAxum {
     let router = Router::new()
         .nest("/", day_negative_one::routes())
         .nest("/2", day_two::routes())
+        .nest("/5", day_five::routes())
         .layer(trace_layer);
     Ok(router.into())
 }
