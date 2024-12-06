@@ -1,9 +1,10 @@
-name: Push
+name: Clippy PR
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+
 env:
   # Disable incremental compilation for faster from-scratch builds
   CARGO_INCREMENTAL: 0
