@@ -34,7 +34,7 @@ async fn egregious_decryption(
     let from = IPv4Addr::try_from(from)?;
     let to = IPv4Addr::try_from(to)?;
     let result = from.wrapping_sub(&to)?;
-    Ok(result.try_into()?)
+    Ok(result.into())
 }
 
 async fn egregious_encryption_v6(
