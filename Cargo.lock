@@ -1789,6 +1789,7 @@ name = "shuttlings-cch24"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "async-trait",
  "axum 0.7.9",
  "cargo-manifest",
  "itertools 0.13.0",
