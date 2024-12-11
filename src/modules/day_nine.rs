@@ -34,6 +34,7 @@ impl From<MilkPayload> for Body {
     }
 }
 
+#[allow(clippy::excessive_precision)]
 impl MilkPayload {
     fn convert(&self) -> MilkPayload {
         match self {

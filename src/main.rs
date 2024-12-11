@@ -17,7 +17,7 @@ pub struct AppState {
 impl AppState {
     fn new() -> Self {
         Self {
-            rate_limit: RateLimit::new(),
+            rate_limit: RateLimit::default(),
         }
     }
 }

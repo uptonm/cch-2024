@@ -8,8 +8,8 @@ use tokio::sync::Mutex;
 #[derive(Debug, Clone)]
 pub struct RateLimit(pub Arc<Mutex<RateLimiter>>);
 
-impl RateLimit {
-    pub fn new() -> Self {
+impl Default for RateLimit {
+    fn default() -> Self {
         Self(Arc::new(Mutex::new(filled_bucket())))
     }
 }
