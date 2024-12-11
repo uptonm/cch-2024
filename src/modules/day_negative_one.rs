@@ -3,7 +3,9 @@ use axum::response::IntoResponse;
 use axum::routing::get;
 use axum::Router;
 
-pub fn routes() -> Router {
+use crate::AppState;
+
+pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/", get(hello_bird))
         .route("/-1/seek", get(seek))

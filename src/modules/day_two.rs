@@ -5,8 +5,9 @@ use serde::Deserialize;
 
 use crate::utils::error_handling::Result;
 use crate::utils::network_address::{IPv4Addr, IPv6Addr};
+use crate::AppState;
 
-pub fn routes() -> Router {
+pub fn routes() -> Router<AppState> {
     Router::new()
         .route("/dest", get(egregious_encryption))
         .route("/key", get(egregious_decryption))

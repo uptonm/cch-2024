@@ -5,8 +5,9 @@ use axum::Router;
 
 use crate::utils::cargo_manifest::Metadata;
 use crate::utils::error_responses::no_content;
+use crate::AppState;
 
-pub fn routes() -> Router {
+pub fn routes() -> Router<AppState> {
     Router::new().route("/manifest", post(manifest))
 }
 

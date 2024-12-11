@@ -2,11 +2,25 @@ mod modules;
 mod utils;
 
 use axum::Router;
-use tower_http::trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer};
+use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer};
 use tower_http::LatencyUnit;
 use tracing::Level;
 
-use modules::{day_five, day_negative_one, day_two};
+use modules::{day_five, day_negative_one, day_nine, day_two};
+use utils::rate_limit::RateLimit;
+
+#[derive(Debug, Clone)]
+pub struct AppState {
+    pub rate_limit: RateLimit,
+}
+
+impl AppState {
+    fn new() -> Self {
+        Self {
+            rate_limit: RateLimit::new(),
+        }
+    }
+}
 
 #[shuttle_runtime::main]
 async fn main() -> shuttle_axum::ShuttleAxum {
@@ -16,7 +30,6 @@ async fn main() -> shuttle_axum::ShuttleAxum {
                 .level(Level::INFO)
                 .include_headers(true),
         )
-        .on_request(DefaultOnRequest::new().level(Level::INFO))
         .on_response(
             DefaultOnResponse::new()
                 .level(Level::INFO)
@@ -29,6 +42,9 @@ async fn main() -> shuttle_axum::ShuttleAxum {
         .nest("/", day_negative_one::routes())
         .nest("/2", day_two::routes())
         .nest("/5", day_five::routes())
-        .layer(trace_layer);
+        .nest("/9", day_nine::routes())
+        .layer(trace_layer)
+        .with_state(AppState::new());
+
     Ok(router.into())
 }
