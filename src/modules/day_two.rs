@@ -1,18 +1,19 @@
+use axum::body::Body;
 use axum::extract::Query;
-use axum::routing::get;
+use axum::routing::{get, RouterIntoService};
 use axum::Router;
 use serde::Deserialize;
 
 use crate::utils::error_handling::Result;
 use crate::utils::network_address::{IPv4Addr, IPv6Addr};
-use crate::AppState;
 
-pub fn routes() -> Router<AppState> {
+pub fn routes() -> RouterIntoService<Body> {
     Router::new()
         .route("/dest", get(egregious_encryption))
         .route("/key", get(egregious_decryption))
         .route("/v6/dest", get(egregious_encryption_v6))
         .route("/v6/key", get(egregious_decryption_v6))
+        .into_service()
 }
 
 #[derive(Debug, Deserialize)]

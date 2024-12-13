@@ -1,14 +1,14 @@
+use axum::body::Body;
 use axum::http::{header, StatusCode};
 use axum::response::IntoResponse;
-use axum::routing::get;
+use axum::routing::{get, RouterIntoService};
 use axum::Router;
 
-use crate::AppState;
-
-pub fn routes() -> Router<AppState> {
+pub fn routes() -> RouterIntoService<Body> {
     Router::new()
         .route("/", get(hello_bird))
         .route("/-1/seek", get(seek))
+        .into_service()
 }
 
 #[tracing::instrument]
