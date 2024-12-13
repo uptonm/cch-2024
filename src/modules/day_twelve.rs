@@ -45,7 +45,7 @@ async fn place(
 ) -> Result<Response> {
     let mut state = state.0.write().await;
 
-    if column < 1 || column > BOARD_SIZE {
+    if !(1..=BOARD_SIZE).contains(&column) {
         return Ok(Response::builder()
             .status(StatusCode::BAD_REQUEST)
             .body(Body::empty())?);

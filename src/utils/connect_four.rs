@@ -64,9 +64,7 @@ impl Connect4 {
         row_delta: isize,
         col_delta: isize,
     ) -> Option<Player> {
-        let Some(cell) = self.board.get(row).and_then(|row| row.get(col)) else {
-            return None;
-        };
+        let cell = self.board.get(row).and_then(|row| row.get(col))?;
         if cell.is_none() {
             return None;
         }
@@ -76,7 +74,7 @@ impl Connect4 {
             if row >= BOARD_SIZE || col >= BOARD_SIZE {
                 return None;
             }
-            if self.board.get(row).and_then(|row| row.get(col)) != Some(&cell) {
+            if self.board.get(row).and_then(|row| row.get(col)) != Some(cell) {
                 return None;
             }
         }
@@ -123,7 +121,7 @@ impl Display for Connect4 {
                     cell.map(|p| p.to_string()).unwrap_or('⬛'.to_string())
                 )?;
             }
-            write!(f, "⬜\n")?;
+            writeln!(f, "⬜")?;
         }
         writeln!(f, "{}", "⬜".repeat(BOARD_SIZE + 2))?;
         if let Some(winner) = self.winner() {
