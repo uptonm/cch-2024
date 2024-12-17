@@ -1817,6 +1817,7 @@ dependencies = [
  "cargo-manifest",
  "itertools 0.13.0",
  "leaky-bucket",
+ "rand",
  "serde",
  "serde_json",
  "serde_with",

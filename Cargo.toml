@@ -21,3 +21,4 @@ tower-http = { version = "0.6.2", features = ["trace"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 leaky-bucket = "1.1.2"
+rand = "0.8.5"

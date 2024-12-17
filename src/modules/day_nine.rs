@@ -5,18 +5,19 @@ use axum::extract::State;
 use axum::http::header::CONTENT_TYPE;
 use axum::http::{HeaderMap, StatusCode};
 use axum::response::Response;
-use axum::routing::post;
+use axum::routing::{post, RouterIntoService};
 use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
 
 use crate::utils::error_handling::Result;
-use crate::utils::rate_limit::filled_bucket;
-use crate::AppState;
+use crate::utils::rate_limit::{filled_bucket, RateLimit};
 
-pub fn routes() -> Router<AppState> {
+pub fn routes() -> RouterIntoService<Body> {
     Router::new()
         .route("/milk", post(milk))
         .route("/refill", post(refill))
+        .with_state(RateLimit::default())
+        .into_service()
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -47,11 +48,11 @@ impl MilkPayload {
 }
 
 async fn milk(
-    State(state): State<AppState>,
+    State(rate_limit): State<RateLimit>,
     headers: HeaderMap,
     payload: Option<Json<MilkPayload>>,
 ) -> Result<Response> {
-    let has_milk = state.rate_limit.lock().await.try_acquire(1);
+    let has_milk = rate_limit.lock().await.try_acquire(1);
     if !has_milk {
         return too_many_requests();
     }
@@ -71,8 +72,8 @@ async fn milk(
     converted_milk(payload.convert())
 }
 
-async fn refill(State(state): State<AppState>) -> Result<Response> {
-    let mut lock = state.rate_limit.lock().await;
+async fn refill(State(rate_limit): State<RateLimit>) -> Result<Response> {
+    let mut lock = rate_limit.lock().await;
     let bucket = lock.deref_mut();
     *bucket = filled_bucket();
     ok()
