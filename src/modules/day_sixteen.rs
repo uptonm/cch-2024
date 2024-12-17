@@ -43,7 +43,7 @@ async fn unwrap(jar: CookieJar) -> Response {
     validator.required_spec_claims.clear();
 
     let Ok(TokenData { claims, .. }) = jsonwebtoken::decode::<Value>(
-        &jwt.value_trimmed(),
+        jwt.value_trimmed(),
         &DecodingKey::from_secret(JWT_SECRET.as_ref()),
         &validator,
     ) else {
@@ -69,26 +69,20 @@ async fn decode(jwt: String) -> Response {
     validation.algorithms = vec![Algorithm::RS256, Algorithm::RS512];
 
     match jsonwebtoken::decode::<Value>(&jwt, &decoding_key, &validation) {
-        Ok(TokenData { claims, .. }) => {
-            return Response::builder()
-                .status(StatusCode::OK)
-                .header(CONTENT_TYPE, "application/json")
-                .body(Body::from(claims.to_string()))
-                .unwrap();
-        }
+        Ok(TokenData { claims, .. }) => Response::builder()
+            .status(StatusCode::OK)
+            .header(CONTENT_TYPE, "application/json")
+            .body(Body::from(claims.to_string()))
+            .unwrap(),
         Err(error) => match error.kind() {
-            jsonwebtoken::errors::ErrorKind::InvalidSignature => {
-                return Response::builder()
-                    .status(StatusCode::UNAUTHORIZED)
-                    .body(Body::empty())
-                    .unwrap();
-            }
-            _ => {
-                return Response::builder()
-                    .status(StatusCode::BAD_REQUEST)
-                    .body(Body::from(error.to_string()))
-                    .unwrap();
-            }
+            jsonwebtoken::errors::ErrorKind::InvalidSignature => Response::builder()
+                .status(StatusCode::UNAUTHORIZED)
+                .body(Body::empty())
+                .unwrap(),
+            _ => Response::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .body(Body::from(error.to_string()))
+                .unwrap(),
         },
     }
 }
