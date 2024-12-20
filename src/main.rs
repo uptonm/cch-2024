@@ -6,10 +6,17 @@ use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer};
 use tower_http::LatencyUnit;
 use tracing::Level;
 
-use modules::{day_five, day_negative_one, day_nine, day_sixteen, day_twelve, day_two};
+use modules::{
+    day_five, day_negative_one, day_nine, day_nineteen, day_sixteen, day_twelve, day_two,
+};
 
 #[shuttle_runtime::main]
-async fn main() -> shuttle_axum::ShuttleAxum {
+async fn main(#[shuttle_shared_db::Postgres] pool: sqlx::PgPool) -> shuttle_axum::ShuttleAxum {
+    sqlx::migrate!()
+        .run(&pool)
+        .await
+        .expect("Failed to run migrations");
+
     let trace_layer = TraceLayer::new_for_http()
         .make_span_with(
             DefaultMakeSpan::new()
@@ -31,6 +38,7 @@ async fn main() -> shuttle_axum::ShuttleAxum {
         .nest_service("/9", day_nine::routes())
         .nest_service("/12", day_twelve::routes())
         .nest_service("/16", day_sixteen::routes())
+        .nest_service("/19", day_nineteen::routes(pool))
         .layer(trace_layer);
 
     Ok(router.into())
