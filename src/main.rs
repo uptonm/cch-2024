@@ -2,6 +2,7 @@ mod modules;
 mod utils;
 
 use axum::Router;
+use shuttle_persist::PersistInstance;
 use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer};
 use tower_http::LatencyUnit;
 use tracing::Level;
@@ -11,7 +12,10 @@ use modules::{
 };
 
 #[shuttle_runtime::main]
-async fn main(#[shuttle_shared_db::Postgres] pool: sqlx::PgPool) -> shuttle_axum::ShuttleAxum {
+async fn main(
+    #[shuttle_shared_db::Postgres] pool: sqlx::PgPool,
+    #[shuttle_persist::Persist] persist: PersistInstance,
+) -> shuttle_axum::ShuttleAxum {
     sqlx::migrate!()
         .run(&pool)
         .await
@@ -38,7 +42,7 @@ async fn main(#[shuttle_shared_db::Postgres] pool: sqlx::PgPool) -> shuttle_axum
         .nest_service("/9", day_nine::routes())
         .nest_service("/12", day_twelve::routes())
         .nest_service("/16", day_sixteen::routes())
-        .nest_service("/19", day_nineteen::routes(pool))
+        .nest_service("/19", day_nineteen::routes(pool, persist))
         .layer(trace_layer);
 
     Ok(router.into())
