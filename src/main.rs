@@ -3,12 +3,14 @@ mod utils;
 
 use axum::Router;
 use shuttle_persist::PersistInstance;
+use tower_http::services::ServeDir;
 use tower_http::trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer};
 use tower_http::LatencyUnit;
 use tracing::Level;
 
 use modules::{
-    day_five, day_negative_one, day_nine, day_nineteen, day_sixteen, day_twelve, day_two,
+    day_five, day_negative_one, day_nine, day_nineteen, day_sixteen, day_twelve, day_twenty_three,
+    day_two,
 };
 
 #[shuttle_runtime::main]
@@ -36,6 +38,7 @@ async fn main(
     tracing::info!("tracing is initialized");
 
     let router = Router::new()
+        .nest_service("/assets", ServeDir::new("resources/public"))
         .nest_service("/", day_negative_one::routes())
         .nest_service("/2", day_two::routes())
         .nest_service("/5", day_five::routes())
@@ -43,6 +46,7 @@ async fn main(
         .nest_service("/12", day_twelve::routes())
         .nest_service("/16", day_sixteen::routes())
         .nest_service("/19", day_nineteen::routes(pool, persist))
+        .nest_service("/23", day_twenty_three::routes())
         .layer(trace_layer);
 
     Ok(router.into())

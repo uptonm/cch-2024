@@ -1,0 +1,3 @@
+# Declare files that should be moved to the runtime container:
+[build]
+assets = ["resources/public/*"]
